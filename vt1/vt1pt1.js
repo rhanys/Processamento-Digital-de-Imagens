@@ -27,7 +27,7 @@ function cutImageUp() {
     // imagePieces now contains data urls of all the pieces of the image
 
     // load one piece onto the page
-
+    var anImageElement = document.getElementById('myImageElementInTheDom');
 
     imgElement1.src = imagePieces[1];
     imgElement2.src = imagePieces[2];

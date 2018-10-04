@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CSS</title>
+		<style type="text/css">
+
+		* { padding: 0; 
+			margin: 0;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+
+			 }
+
+		#main {
+			display: grid;
+			grid-template-rows: 15vh 10vh 55vh 15vh;
+			grid-template-columns: 25vw 25vw 25vw 25vw;
+			grid-template-areas: "header" "nav" "wrapper aside" "footer";
+			background: #cdcdcd;
+
+		}
+
+		.mainHeader {
+			grid-area: header;
+			grid-column-start: 1;
+			grid-column-end: 5;
+			grid-row: 1;
+			background: red;
+			border-radius: 5px;
+		}
+
+		.mainNav {
+			grid-area: nav;
+			grid-row: 2;
+			grid-column-start: 1;
+			grid-column-end: 5;
+			background: green;
+			border-radius: 5px;
+		}
+
+		.mainAside {
+			grid-area: aside;
+			grid-column-start: 4;
+			grid-column-end: 5;
+			grid-row: 3;
+			background: yellow;
+			border-radius: 5px;
+		}
+
+		.mainFooter {
+			grid-area: footer;
+			grid-column-start: 1;
+			grid-column-end: 5;
+			grid-row: 4;
+			background: orange;
+			border-radius: 5px;
+		}
+
+		.mainWrapper {
+			display: grid;
+			grid-area: wrapper;
+			grid-row: 3;
+			grid-column-start: 1;
+			grid-column-end: 4;
+			grid-template-columns: 50% 50%;
+			grid-template-rows: 100%;
+			grid-template-areas: "colu" "colo";
+			background: #cdcdcd;
+
+		}
+
+		.mainWrapperColumn1 {
+			grid-area: colu;
+			grid-row: 1;
+			grid-column-start: 1;
+			grid-column-end: 2;
+			background: lightblue;
+			border-style: solid;
+		}
+
+		.mainWrapperColumn2 {
+			grid-area: colo;
+			grid-row: 1;
+			grid-column-start: 2;
+			grid-column-end: 3;
+			background: #cdcdcd;
+			border-style: solid;
+		}
+
+
+		/* BreakPoints */
+		@media screen and (max-width: 768px) {
+			body { background: #cdcdcd; }
+			#main { grid-template-areas: "header" "content" "aside" "footer";}
+			.mainNav { grid-area: header; margin-top: 20px; }
+
+		}	
+
+
+
+		</style>
+</head>
+<body>
+	
+	<section id="main">
+		<header class="mainHeader"> Header </header>
+		<nav class="mainNav"> Nav </nav>
+			<div class="mainWrapper">
+				Wrapper
+				<div class="mainWrapperColumn1">
+					Column1
+				</div>
+				<div class="mainWrapperColumn2">
+					Column2
+				</div>
+			</div>
+		<aside class="mainAside"> Aside </aside>
+		<footer class="mainFooter"> Footer </footer>
+	</section>
+
+
+
+
+</body>
+</html>
