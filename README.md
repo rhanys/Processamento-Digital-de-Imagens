@@ -1,5 +1,4 @@
-# Processamento-Digital-de-Imagens
-Vt's
+#Processamento digital de imagens
 
-
-Javascript/Html Files
+##Build: npm run build
+##Start: npm run start
