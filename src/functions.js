@@ -154,6 +154,58 @@ var filtroMedia = (data, filterMask) => {
     return newData;
 }
 
+var highPass = (data, ff = 60) => { //ff = frequencia de filtragem
+    for (let i = 0; i < data.length; i += 4) {
+      const intensidade = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      const pass = intensidade > ff;
+
+      if (!pass) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
+      }
+    }
+
+    var newData = data;
+    return newData;    
+  }
+  
+var lowPass = (data, ff = 60) => { //ff = frequencia de filtragem
+    for (let i = 0; i < data.length; i += 4) {
+      const intensidade = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      const pass = intensidade < ff;
+
+      if (!pass) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
+      }
+    }
+    var newData = data;
+    return newData;
+}
+/*
+var lowHighPass = (minThreshold, maxTreshold) => {
+    const data = this.imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      const pass = brightness < maxTreshold && brightness > minThreshold;
+
+      if (!pass) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
+      }
+    }
+
+    this.filterStack.push('low-high-pass');
+
+    return this;
+  }
+    
+
+return this;
+}*/
 
 module.exports = {
     filtroMedia,
@@ -164,6 +216,8 @@ module.exports = {
     canalRed,
     histoGram,
     fillChart,
+    highPass,
+    lowPass,
 
 
 }

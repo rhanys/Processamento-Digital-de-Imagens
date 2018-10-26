@@ -4,7 +4,8 @@
 
      var cData = [];
      var cLabel = [];
-     const funcs = require('./functions');
+	 const funcs = require('./functions');
+	 const Sobel = require('sobel');
 
 
      for (let i = 0; i < 256; i++) {
@@ -107,7 +108,10 @@
      var histograma = {};
      var histoGram = funcs.histoGram;
 
-     var fillChart = funcs.fillChart;
+	 var fillChart = funcs.fillChart;
+	 
+	 var filtroHighPass = funcs.highPass;
+	 var filtroLowPass = funcs.lowPass;
 
 
      var desenhaTransform = (img, canvas) => {
@@ -115,7 +119,8 @@
      	canvas.width = img.width;
      	canvas.height = img.height
      	var ctx = canvas.getContext('2d');
-     	ctx.drawImage(img, 0, 0);
+		 ctx.drawImage(img, 0, 0);
+		 
      	for (var linha = 0; linha < img.width; linha++) {
      		for (var coluna = 0; coluna < img.height; coluna++) {
      			var filterMask = [];
@@ -211,14 +216,13 @@
      			else if (selectedTrans === 'filtroMedia') {
      				data = filtroMedia(data, filterMask);
      			} else if (selectedTrans === 'filtroMediana') {
-     				filterMaskMatrix = filtroMediana(data, filterMaskMatrix);
-
-     				for (let i = 0; i < filtermaskMatrix.length; i++) {
-     					for (let j = 0; j < filtermaskMatrix[i].length; j++) {
-
-     					}
-     				}
-
+					 //data = filtroHighPass(data);
+					 var imgdata = ctx.getImageData(0, 0, img.width, img.height);
+					 var sobelData = Sobel(imgdata)
+					 var sobelImageData = sobelData.toImageData();
+					 ctx.putImageData(sobelImageData, 0, 0);
+					 //data = filtroLowPass(data);
+     				
      			}
 
 
@@ -228,11 +232,11 @@
      			if (linha === 0 && coluna === 0)
      				console.log(data);
 
-     			ctx.putImageData(pixel, linha, coluna);
+     			/*ctx.putImageData(pixel, linha, coluna);
      			ctx.fillStyle = 'rgba(' + data[0] +
      				',' + data[1] +
      				',' + data[2] +
-     				',' + (data[3] / 255) + ')';
+     				',' + (data[3] / 255) + ')';*/
 
      		}
      	}
