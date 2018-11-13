@@ -115,6 +115,8 @@ var fillChart = () => {
     }
 
 }
+var checkPixelBound = (s) => s > 255 ? 255 : (s < 0 ? 0 : s);
+
 
 
 var filtroMedia = (data, filterMask) => {
@@ -154,58 +156,60 @@ var filtroMedia = (data, filterMask) => {
     return newData;
 }
 
-var highPass = (data, ff = 60) => { //ff = frequencia de filtragem
-    for (let i = 0; i < data.length; i += 4) {
-      const intensidade = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      const pass = intensidade > ff;
 
-      if (!pass) {
-        data[i] = 255;
-        data[i + 1] = 255;
-        data[i + 2] = 255;
-      }
+
+
+//alta
+var highPass = (data, ff = 152) => { //ff = frequencia de filtragem
+    for (let i = 0; i < data.length; i += 4) {
+        const intensidade = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        const pass = intensidade > ff; //
+
+        if (!pass) {
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+        }
     }
 
     var newData = data;
-    return newData;    
-  }
-  
-var lowPass = (data, ff = 60) => { //ff = frequencia de filtragem
+    return newData;
+}
+
+
+//baixa
+var lowPass = (data, ff = 152) => { //ff = frequencia de filtragem
     for (let i = 0; i < data.length; i += 4) {
       const intensidade = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      const pass = intensidade < ff;
+      const pass = intensidade < ff; //alta frequencia atenuados
 
       if (!pass) {
-        data[i] = 255;
-        data[i + 1] = 255;
-        data[i + 2] = 255;
+        data[i] = 0;
+        data[i + 1] = 0;
+        data[i + 2] = 0;
       }
     }
     var newData = data;
     return newData;
 }
-/*
-var lowHighPass = (minThreshold, maxTreshold) => {
-    const data = this.imageData.data;
+
+
+//faixa
+var bandPass = (data, minThreshold = 20, maxTreshold=60) => { 
     for (let i = 0; i < data.length; i += 4) {
       const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
       const pass = brightness < maxTreshold && brightness > minThreshold;
 
       if (!pass) {
-        data[i] = 255;
-        data[i + 1] = 255;
-        data[i + 2] = 255;
+        data[i] = 0;
+        data[i + 1] = 0;
+        data[i + 2] = 0;
       }
     }
 
-    this.filterStack.push('low-high-pass');
-
-    return this;
+    var newData = data;
+    return newData;
   }
-    
-
-return this;
-}*/
 
 module.exports = {
     filtroMedia,
@@ -218,6 +222,7 @@ module.exports = {
     fillChart,
     highPass,
     lowPass,
+    bandPass,
 
 
 }

@@ -1,11 +1,10 @@
      var imgGlobal = new Image();
-     var ctrlTransp = 0;
-     var ctrlTranspLess = 0;
+     var filterMask = [];
 
      var cData = [];
      var cLabel = [];
-	 const funcs = require('./functions');
-	 const Sobel = require('sobel');
+     const funcs = require('./functions');
+     const Sobel = require('sobel');
 
 
      for (let i = 0; i < 256; i++) {
@@ -89,109 +88,106 @@
      	return newData;
 
 	 }*/
-	 
-	 
+
+
      var escalaCinza = funcs.escalaCinza;
-
      var inverterCores = funcs.inverterCores;
-
-
-
      var canalBlue = funcs.inverterCores;
-
-
-
      var canalRed = funcs.canalRed;
-
      var canalGreen = funcs.canalGreen;
-
      var histograma = {};
      var histoGram = funcs.histoGram;
-
-	 var fillChart = funcs.fillChart;
-	 
-	 var filtroHighPass = funcs.highPass;
+     var fillChart = funcs.fillChart;
+     var filtroHighPass = funcs.highPass;
 	 var filtroLowPass = funcs.lowPass;
+	 var filtroBandPass = funcs.bandPass;
 
 
-     var desenhaTransform = (img, canvas) => {
+
+     var generateMatrix = (ctx, data, selectedTrans, l, c) => {
+     	//filtro
+
+     		dataAux = ctx.getImageData(l - 1, c, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+     		dataAux = ctx.getImageData(l - 1, c - 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+     		dataAux = ctx.getImageData(l - 1, c + 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+
+
+     		filterMask.push(
+     			data
+     		);
+     		var dataAux = ctx.getImageData(l, c - 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+     		dataAux = ctx.getImageData(l, c + 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+
+
+
+
+     		dataAux = ctx.getImageData(l + 1, c, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+     		dataAux = ctx.getImageData(l + 1, c - 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+
+     		dataAux = ctx.getImageData(l + 1, c + 1, 1, 1).data;
+     		filterMask.push(
+     			dataAux
+     		);
+     	//return filterMask;
+     	//end filtro
+
+	 }
+	 
+	 var drawImg = (img, canvas) => {
+		console.log(canvas)
+		var selectedTrans = document.getElementById("mySelect").value;
+		canvas.width = img.width;
+		canvas.height = img.height
+		var ctx = canvas.getContext('2d');
+		ctx.drawImage(img, 0, 0);
+	}
+
+	//var drawByData = ()
+
+
+     var desenhaTransform = (img, sobelData) => {
+		var canvas = document.getElementById('canvas');
+		console.log(img);
      	var selectedTrans = document.getElementById("mySelect").value;
      	canvas.width = img.width;
      	canvas.height = img.height
      	var ctx = canvas.getContext('2d');
 		 ctx.drawImage(img, 0, 0);
-		 
+		 //ctx.putImageData(sobelData, 0, 0);
+
      	for (var linha = 0; linha < img.width; linha++) {
      		for (var coluna = 0; coluna < img.height; coluna++) {
-     			var filterMask = [];
-     			var filterMaskMatrix = [];
+
      			var pixel = ctx.getImageData(linha, coluna, 1, 1);
-
-
      			var data = pixel.data;
-
-     			//filtro
-     			if (selectedTrans === 'filtroMedia' || selectedTrans === 'filtroMediana') {
-
-     				dataAux = ctx.getImageData(linha - 1, coluna, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-
-     				dataAux = ctx.getImageData(linha - 1, coluna - 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-
-     				dataAux = ctx.getImageData(linha - 1, coluna + 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-     				filterMaskMatrix.push([filterMask[0], filterMask[1], filterMask[2]]);
-
-
-
-     				filterMask.push(
-     					data
-     				);
-     				var dataAux = ctx.getImageData(linha, coluna - 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-
-     				dataAux = ctx.getImageData(linha, coluna + 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-     				filterMaskMatrix.push([filterMask[3], filterMask[4], filterMask[5]]);
-
-
-
-
-
-     				dataAux = ctx.getImageData(linha + 1, coluna, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-
-     				dataAux = ctx.getImageData(linha + 1, coluna - 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-
-     				dataAux = ctx.getImageData(linha + 1, coluna + 1, 1, 1).data;
-     				filterMask.push(
-     					dataAux
-     				);
-     				filterMaskMatrix.push([filterMask[6], filterMask[7], filterMask[8]]);
-     			}
-
-     			//end filtro
-
-
-
-
-
+     			generateMatrix(ctx, data, selectedTrans, linha, coluna);
      			var dataConvertArray = [];
 
      			for (let k = 0; k < data.length; k++) {
@@ -215,15 +211,23 @@
      				data = histoGram(data);
      			else if (selectedTrans === 'filtroMedia') {
      				data = filtroMedia(data, filterMask);
-     			} else if (selectedTrans === 'filtroMediana') {
-					 //data = filtroHighPass(data);
-					 var imgdata = ctx.getImageData(0, 0, img.width, img.height);
-					 var sobelData = Sobel(imgdata)
-					 var sobelImageData = sobelData.toImageData();
-					 ctx.putImageData(sobelImageData, 0, 0);
-					 //data = filtroLowPass(data);
-     				
-     			}
+     				filterMask = [];
+     			} else if (selectedTrans === 'filtroLowPass') {
+					 data = filtroLowPass(data);
+					 if (linha === 0 && coluna === 0)
+     					console.log(data);
+					 filterMask = [];
+     			} else if (selectedTrans === 'filtroHighPass') {
+					data = filtroHighPass(data);
+					if (linha === 0 && coluna === 0)
+						console.log(data);
+					filterMask = [];
+				} else if (selectedTrans === 'filtroBandPass') {
+					data = filtroBandPass(data);
+					if (linha === 0 && coluna === 0)
+						console.log(data);
+					filterMask = [];
+				}
 
 
      			pixel.data = data;
@@ -232,18 +236,38 @@
      			if (linha === 0 && coluna === 0)
      				console.log(data);
 
-     			/*ctx.putImageData(pixel, linha, coluna);
+     			ctx.putImageData(pixel, linha, coluna);
      			ctx.fillStyle = 'rgba(' + data[0] +
      				',' + data[1] +
      				',' + data[2] +
-     				',' + (data[3] / 255) + ')';*/
+     				',' + (data[3] / 255) + ')';
 
      		}
      	}
+
      	if (selectedTrans === 'histogram')
      		fillChart();
-
+		 console.log(ctx);
      	return data;
+     }
+
+     var drawFilters = (img, canvas) => {
+		//desenhaTransform(img);
+     	console.log(img);
+     	var selectedTrans = document.getElementById("mySelect").value;
+		 var canvas = document.getElementById('canvas');
+		 console.log(canvas);
+     	canvas.width = img.width;
+     	canvas.height = img.height;
+     	var ctx = canvas.getContext('2d');
+     	ctx.drawImage(img, 0, 0);
+     	var imgdata = ctx.getImageData(0, 0, img.width, img.height);
+     	var sobelData = Sobel(imgdata)
+     	var sobelImageData = sobelData.toImageData();
+     	console.log(sobelImageData);
+     	ctx.putImageData(sobelImageData, 0, 0);
+		 console.log(ctx);
+		 return desenhaTransform(img, sobelImageData);
      }
 
 
@@ -251,7 +275,6 @@
      var previewFile = function () {
      	var preview = document.querySelector('img'); //selects the query named img
      	var file = document.querySelector('input[type=file]').files[0]; //sames as here
-     	var canvas = document.getElementById('canvas');
      	var selectedTrans = document.getElementById("mySelect").value;
      	var reader = new FileReader();
      	var img = new Image();
@@ -264,7 +287,14 @@
      		img.src = reader.result;
      		imgGlobal.src = reader.result;
      		let data;
-     		data = desenhaTransform(img, canvas);
+     		if (selectedTrans !== 'filtroLowPass' && selectedTrans !== 'filtroHighPass'  && selectedTrans !== 'filtroBandPass') {
+				data = desenhaTransform(img);
+			 }
+
+     		else {
+				 //data = drawFilters(img, canvas);
+     			data = desenhaTransform(img);
+     		}
 
 
 
