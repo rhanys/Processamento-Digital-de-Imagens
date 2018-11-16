@@ -1,10 +1,28 @@
-     var imgGlobal = new Image();
+"use strict";
+	 var imgGlobal = new Image();
      var filterMask = [];
 
      var cData = [];
      var cLabel = [];
-     const funcs = require('./functions');
-     const Sobel = require('sobel');
+	 const funcs = require('./functions');
+	 const Captcha = require('./captcha');
+	 const Sobel = require('sobel');
+	 const fs = require('fs');
+	 const captcha = require('trek-captcha');
+
+	var newCaptcha = () => {
+		Captcha.DrawCaptcha();
+	
+	}
+
+	var detectEdges = () => {
+		Captcha.DetectEdges();
+	}
+
+	var binarize = () => {
+		Captcha.Binarize(254);
+	}
+
 
 
      for (let i = 0; i < 256; i++) {
@@ -179,8 +197,8 @@
      	canvas.width = img.width;
      	canvas.height = img.height
      	var ctx = canvas.getContext('2d');
-		 ctx.drawImage(img, 0, 0);
-		 //ctx.putImageData(sobelData, 0, 0);
+		 //ctx.drawImage(img, 0, 0);
+		 ctx.putImageData(sobelData, 0, 0);
 
      	for (var linha = 0; linha < img.width; linha++) {
      		for (var coluna = 0; coluna < img.height; coluna++) {
@@ -271,7 +289,6 @@
      }
 
 
-
      var previewFile = function () {
      	var preview = document.querySelector('img'); //selects the query named img
      	var file = document.querySelector('input[type=file]').files[0]; //sames as here
@@ -292,8 +309,8 @@
 			 }
 
      		else {
-				 //data = drawFilters(img, canvas);
-     			data = desenhaTransform(img);
+				 data = drawFilters(img, canvas);
+     			//data = desenhaTransform(img);
      		}
 
 
@@ -318,5 +335,8 @@
      }
 
      module.exports = {
-     	previewFile: previewFile
+		 previewFile: previewFile,
+		 newCaptcha: newCaptcha,
+		 detectEdges: detectEdges,
+		 binarize: binarize,
      }

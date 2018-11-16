@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <title>Captcha Recognize</title>
+</head>
+
+<body align="center">
+    <h1>Captcha Recognize</h1>
+    <br>
+        <table align="center">
+            <tr>
+                <td>
+                    <canvas id="captcha-img" width="0" height="0"></canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="ui.newCaptcha()">Mostrar Original</button>
+                </td>
+            </tr>
+
+        </table>
+
+        <table align="center">
+                <tr>
+                    <td>
+                        <canvas id="captcha-edge" width="0" height="0"></canvas>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick="ui.detectEdges()">Detectar bordas </button>
+                    </td>
+                </tr>
+    
+            </table>
+
+
+            <table align="center">
+                    <tr>
+                        <td>
+                            <canvas id="captcha-binarize" width="0" height="0"></canvas>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="ui.binarize()">Limiarização/Binarizar </button>
+                        </td>
+                    </tr>
+        
+                </table>
+</body>
+
+</html>

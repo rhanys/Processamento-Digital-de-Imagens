@@ -1,12 +1,19 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const path = require("path");
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js'
+  }
+    ,
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js',
     sourceMapFilename: "bundle.map",
     libraryTarget: 'var',
     library: 'ui'
+  },
+  node: {
+    fs: 'empty'
   },
   module: {
     rules: [
@@ -17,6 +24,7 @@ module.exports = {
           loader: "babel-loader"
         }
       },
+
       {
         test: /\.html$/,
         use: [
@@ -26,12 +34,16 @@ module.exports = {
           }
         ]
       }
-    ]
+    ],
   },
   plugins: [
-    new HtmlWebPackPlugin({
-      template: "./src/index.html",
-      filename: "./index.html"
+    new HtmlWebPackPlugin({  // Also generate a test.html
+      filename: 'index.html',
+      template: './src/index.html'
+    }), // Generates default index.html
+    new HtmlWebPackPlugin({  // Also generate a test.html
+      filename: 'captchaRecog.html',
+      template: './src/captchaRecog.html',
     })
   ]
 };
