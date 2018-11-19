@@ -1,14 +1,14 @@
 "use strict";
 	 var imgGlobal = new Image();
-     var filterMask = [];
+	 var filterMask = [];
+	 var letters;
 
      var cData = [];
-     var cLabel = [];
+	 var cLabel = [];
 	 const funcs = require('./functions');
 	 const Captcha = require('./captcha');
 	 const Sobel = require('sobel');
 	 const fs = require('fs');
-	 const captcha = require('trek-captcha');
 
 	var newCaptcha = () => {
 		Captcha.DrawCaptcha();
@@ -21,6 +21,14 @@
 
 	var binarize = () => {
 		Captcha.Binarize(254);
+	}
+
+	var SplitLetters = () => {
+		letters = Captcha.SplitLetters();
+	}
+
+	var runRecognize = () => {
+		Captcha.runRecognize(letters);
 	}
 
 
@@ -339,4 +347,6 @@
 		 newCaptcha: newCaptcha,
 		 detectEdges: detectEdges,
 		 binarize: binarize,
+		 SplitLetters: SplitLetters,
+		 runRecognize: runRecognize,
      }

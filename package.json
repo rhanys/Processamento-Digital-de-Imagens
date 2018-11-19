@@ -30,6 +30,7 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
+    "brain.js": "^1.5.0",
     "captcha-generator": "^0.9.4",
     "file-system": "^2.2.2",
     "mathjs": "^5.2.3",
