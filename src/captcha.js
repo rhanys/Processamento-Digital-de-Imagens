@@ -164,23 +164,6 @@ var SplitLetters = () => {
 
 	}
 
-
-
-	/*
-	if(linha <=5 && linha > 3) {
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		ctx.putImageData(pixel, coluna, linha);
-	}
-
-	if(linha >= height - 2) {
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		ctx.putImageData(pixel, coluna, linha);
-	}*/
-
 	for (let i = 0; i < letters.length; i++) {
 		ctx.strokeRect(letters[i].initX, 5, letters[i].finalX, height - 10);
 		/*console.log('Dimensoes');
@@ -229,13 +212,13 @@ var runRecognize = (letters) => {
 	var width = letters[0].finalX - letters[0].initX;
 	var height = letters[0].finalY - letters[0].initY;
 	canvas.width = canvasOri.width;
-	canvas.height = canvasOri.height;
+	canvas.height = canvasOri.height + 100;
 	var ctxOri = canvasOri.getContext('2d');
 	var ctx = canvas.getContext('2d');
 
 
 	var dataTrain = [];
-	for (let i = 0; i < letters.length - 1; i++) {
+	for (let i = 0; i < letters.length; i++) {
 		var lettData = ctxOri.getImageData(letters[i].initX, letters[i].initY, letters[i].finalX, letters[i].finalY);
 		var lettDataConvert = [];
 		let outpt = [];
@@ -254,42 +237,48 @@ var runRecognize = (letters) => {
 	}
 
 	net.train(dataTrain);
-	var runData = ctxOri.getImageData(letters[3].initX, letters[3].initY, letters[3].finalX, letters[3].finalY);
-	runData = transformArrayData(runData);
-	var output = net.run(runData);
-	var result = -1;
+	var recognizedWord = '';
+	// reconhece todas as letras do captcha
+	for (let captchaIdx = 0; captchaIdx < letters.length; captchaIdx++) {
+		var runData = ctxOri.getImageData(letters[captchaIdx].initX, letters[captchaIdx].initY, letters[captchaIdx].finalX, letters[captchaIdx].finalY);
+		runData = transformArrayData(runData);
+		var output = net.run(runData);
+		var result = -1;
 
-	for (let i = 0; i < output.length; i++) {
-		result = activate(output[i], i);
-		if (result > -1)
-			break;
+		for (let i = 0; i < output.length; i++) {
+			result = activate(output[i], i);
+			if (result > -1)
+				break;
+		}
+
+
+		switch (result) {
+			case 0:
+				result = '4';
+				break;
+			case 1:
+				result = 'D';
+				break;
+			case 2:
+				result = '7';
+				break;
+			case 3:
+				result = 'Y';
+				break;
+			case 4:
+				result = 'S';
+				break;
+			default:
+				result = 'NAO RECONHECIDO'
+				break;
+		}
+
+		console.log('Letra reconhecida: ' + result);
+		recognizedWord += result + '';
 	}
-
-	console.log(result);
-
-
-	switch (result) {
-		case 0:
-			result = '4';
-			break;
-		case 1:
-			result = 'D';
-			break;
-		case 2:
-			result = '7';
-			break;
-		case 3:
-			result = 'Y';
-			break;
-		case 4:
-			result = 'S';
-			break;
-		default:
-			result = 'NAO RECONHECIDO'
-			break;
-	}
-
-	console.log('Letra reconhecida: ' + result);
+	ctx.font = "30px Arial";
+	ctx.fillText(recognizedWord,10,50);	
+	console.log(recognizedWord);
 }
 
 var activate = (v, i) => v > 0.5 ? i : -1;
