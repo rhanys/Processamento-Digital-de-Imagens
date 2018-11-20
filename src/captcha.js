@@ -128,60 +128,66 @@ var SplitLetters = () => {
 	var letters = [];
 	console.log(width);
 
-			//var pixel = ctx.getImageData(coluna, linha, 1, 1);
-			//var data = pixel.data;
-	
-					letters.push({initX : 10,
-					initY : 5});
-	
-					letters[0].finalX = 24;
-					letters[0].finalY = height - 10;
-					var fl = 34;
-					var f = 24
-		
-					for(let i = 1; i < 5; i++) {
-						if(i === 1) {
-							letters.push({initX : fl,
-								initY : 5});
-								letters[i].finalX = f;
-					letters[i].finalY = height - 10;
-						} else {
-							fl +=24;
-							f +=1;
-							letters.push({initX : fl,
-								initY : 5});
-								letters[i].finalX = f;
-							letters[i].finalY = height - 10;
-						}
-							
-	
-					
-					}
+	//var pixel = ctx.getImageData(coluna, linha, 1, 1);
+	//var data = pixel.data;
 
-				
+	letters.push({
+		initX: 10,
+		initY: 5
+	});
 
-			/*
-			if(linha <=5 && linha > 3) {
-				data[0] = 0;
-				data[1] = 0;
-				data[2] = 0;
-				ctx.putImageData(pixel, coluna, linha);
-			}
+	letters[0].finalX = 24;
+	letters[0].finalY = height - 10;
+	var fl = 34;
+	var f = 24
 
-			if(linha >= height - 2) {
-				data[0] = 0;
-				data[1] = 0;
-				data[2] = 0;
-				ctx.putImageData(pixel, coluna, linha);
-			}*/
+	for (let i = 1; i < 5; i++) {
+		if (i === 1) {
+			letters.push({
+				initX: fl,
+				initY: 5
+			});
+			letters[i].finalX = f;
+			letters[i].finalY = height - 10;
+		} else {
+			fl += 24;
+			f += 1;
+			letters.push({
+				initX: fl,
+				initY: 5
+			});
+			letters[i].finalX = f;
+			letters[i].finalY = height - 10;
+		}
+
+
+
+	}
+
+
+
+	/*
+	if(linha <=5 && linha > 3) {
+		data[0] = 0;
+		data[1] = 0;
+		data[2] = 0;
+		ctx.putImageData(pixel, coluna, linha);
+	}
+
+	if(linha >= height - 2) {
+		data[0] = 0;
+		data[1] = 0;
+		data[2] = 0;
+		ctx.putImageData(pixel, coluna, linha);
+	}*/
 
 	for (let i = 0; i < letters.length; i++) {
 		ctx.strokeRect(letters[i].initX, 5, letters[i].finalX, height - 10);
-	/*console.log('Dimensoes');
-	console.log(Math.abs(letters[i].finalX - letters[i].initX));
-	console.log('por');
-	console.log(letters[i].finalY - letters[i].initY);
-	console.log(letters);*/
+		/*console.log('Dimensoes');
+		console.log(Math.abs(letters[i].finalX - letters[i].initX));
+		console.log('por');
+		console.log(letters[i].finalY - letters[i].initY);
+		console.log(letters);*/
 	}
 	return letters;
 
@@ -189,12 +195,12 @@ var SplitLetters = () => {
 
 var transformArrayData = (arrData) => {
 	let arrDataConv = [];
-	arrData.data.map((s, i)=>{
-		if(s > 200)
+	arrData.data.map((s, i) => {
+		if (s > 200)
 			arrDataConv.push(0);
-			else
-				arrDataConv.push(1);
-			
+		else
+			arrDataConv.push(1);
+
 	});
 
 	return arrDataConv;
@@ -204,9 +210,9 @@ var runRecognize = (letters) => {
 	// provide optional config object (or undefined). Defaults shown.
 	const config = {
 		binaryThresh: 0.5,
-		hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
-		activation: 'sigmoid',  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
-		leakyReluAlpha: 0.01 
+		hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
+		activation: 'sigmoid', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+		leakyReluAlpha: 0.01
 	};
 
 	// create a simple feed forward neural network with backpropagation
@@ -228,13 +234,13 @@ var runRecognize = (letters) => {
 	var ctx = canvas.getContext('2d');
 
 
-		var dataTrain = [];
-	for(let i=0; i<letters.length - 1; i++) {
+	var dataTrain = [];
+	for (let i = 0; i < letters.length - 1; i++) {
 		var lettData = ctxOri.getImageData(letters[i].initX, letters[i].initY, letters[i].finalX, letters[i].finalY);
 		var lettDataConvert = [];
 		let outpt = [];
-		for(j = 0; j < 5; j++) {
-			outpt.push(0);	
+		for (j = 0; j < 5; j++) {
+			outpt.push(0);
 		}
 		outpt[i] = 1;
 		lettDataConvert = transformArrayData(lettData);
@@ -243,7 +249,7 @@ var runRecognize = (letters) => {
 			output: outpt
 		})
 		//ctx.putImageData(lettData, 0, 0);
-		
+
 
 	}
 
@@ -252,36 +258,36 @@ var runRecognize = (letters) => {
 	runData = transformArrayData(runData);
 	var output = net.run(runData);
 	var result = -1;
-	
-	for(let i=0; i<output.length; i++) {
+
+	for (let i = 0; i < output.length; i++) {
 		result = activate(output[i], i);
-		if(result > -1)
+		if (result > -1)
 			break;
 	}
 
 	console.log(result);
 
-	
-		switch (result) {
-			case 0:
-				result = '4';
-				break;
-			case 1:
-				result = 'D';
-				break;
-			case 2:
-				result = '7';
-				break;
-			case 3:
-				result = 'Y';
-				break;
-			case 4:
-				result = 'S';
-				break;
-			default:
-				result = 'NAO RECONHECIDO'
-				break;
-		}
+
+	switch (result) {
+		case 0:
+			result = '4';
+			break;
+		case 1:
+			result = 'D';
+			break;
+		case 2:
+			result = '7';
+			break;
+		case 3:
+			result = 'Y';
+			break;
+		case 4:
+			result = 'S';
+			break;
+		default:
+			result = 'NAO RECONHECIDO'
+			break;
+	}
 
 	console.log('Letra reconhecida: ' + result);
 }
