@@ -177,21 +177,36 @@ var SplitLetters = () => {
 
 	for (let i = 0; i < letters.length; i++) {
 		ctx.strokeRect(letters[i].initX, 5, letters[i].finalX, height - 10);
-	console.log('Dimensoes');
+	/*console.log('Dimensoes');
 	console.log(Math.abs(letters[i].finalX - letters[i].initX));
 	console.log('por');
 	console.log(letters[i].finalY - letters[i].initY);
-	console.log(letters);
+	console.log(letters);*/
 	}
 	return letters;
 
 }
 
+var transformArrayData = (arrData) => {
+	let arrDataConv = [];
+	arrData.data.map((s, i)=>{
+		if(s > 200)
+			arrDataConv.push(0);
+			else
+				arrDataConv.push(1);
+			
+	});
+
+	return arrDataConv;
+}
+
 var runRecognize = (letters) => {
 	// provide optional config object (or undefined). Defaults shown.
 	const config = {
-		inputSize: 20,
-		outputSize: 5,
+		binaryThresh: 0.5,
+		hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
+		activation: 'sigmoid',  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+		leakyReluAlpha: 0.01 
 	};
 
 	// create a simple feed forward neural network with backpropagation
@@ -212,16 +227,19 @@ var runRecognize = (letters) => {
 	var ctxOri = canvasOri.getContext('2d');
 	var ctx = canvas.getContext('2d');
 
-	var dataTrain = [];
+
+		var dataTrain = [];
 	for(let i=0; i<letters.length - 1; i++) {
 		var lettData = ctxOri.getImageData(letters[i].initX, letters[i].initY, letters[i].finalX, letters[i].finalY);
+		var lettDataConvert = [];
 		let outpt = [];
 		for(j = 0; j < 5; j++) {
 			outpt.push(0);	
 		}
 		outpt[i] = 1;
+		lettDataConvert = transformArrayData(lettData);
 		dataTrain.push({
-			input: lettData.data,
+			input: lettDataConvert,
 			output: outpt
 		})
 		//ctx.putImageData(lettData, 0, 0);
@@ -230,10 +248,45 @@ var runRecognize = (letters) => {
 	}
 
 	net.train(dataTrain);
-	var runData = ctxOri.getImageData(letters[2].initX, letters[2].initY, letters[2].finalX, letters[2].finalY);
-	var output = net.run(runData); 
-	console.log(output.toString());
+	var runData = ctxOri.getImageData(letters[3].initX, letters[3].initY, letters[3].finalX, letters[3].finalY);
+	runData = transformArrayData(runData);
+	var output = net.run(runData);
+	var result = -1;
+	
+	for(let i=0; i<output.length; i++) {
+		result = activate(output[i], i);
+		if(result > -1)
+			break;
+	}
+
+	console.log(result);
+
+	
+		switch (result) {
+			case 0:
+				result = '4';
+				break;
+			case 1:
+				result = 'D';
+				break;
+			case 2:
+				result = '7';
+				break;
+			case 3:
+				result = 'Y';
+				break;
+			case 4:
+				result = 'S';
+				break;
+			default:
+				result = 'NAO RECONHECIDO'
+				break;
+		}
+
+	console.log('Letra reconhecida: ' + result);
 }
+
+var activate = (v, i) => v > 0.5 ? i : -1;
 
 module.exports = {
 	DrawCaptcha,
