@@ -58,37 +58,18 @@ var calcBinarize = (limit, dtMin) => {
 	ctx.putImageData(imgdata, 0, 0);
 
 	var t = limit;
-	var dt = dtMin;
 
-	/*while (dt >= dtMin) {
-		var g1 = [];
-		var g2 = [];
-		for (var linha = 0; linha < width; linha++) {
-			for (var coluna = 0; coluna < height; coluna++) {
-				var pixel = ctx.getImageData(linha, coluna, 1, 1);
-				var data = pixel.data;
-				if (data[0] < t && data[1] < t && data[2] < t) g1.push(data[0]);
-				else g2.push(data[0]);
-			}
-		}
-		const m1 = math.mean(g1);
-		const m2 = math.mean(g2);
-		const nt = (m1 + m2) / 2;
-
-		dt = Math.abs(nt - t);
-		t = nt;
-	}*/
 
 	for (var linha = 0; linha < width; linha++) {
 		for (var coluna = 0; coluna < height; coluna++) {
 			var pixel = ctx.getImageData(linha, coluna, 1, 1);
 			var data = pixel.data;
-			if (data[0] < t && data[1] < t && data[2] < t) {
-				data[0] = 255;
+			if (data[0] < t && data[1] < t && data[2] < t) { //if black
+				data[0] = 255; //white
 				data[1] = 255;
 				data[2] = 255;
-			} else {
-				data[0] = 0;
+			} else { // if white
+				data[0] = 0; //black
 				data[1] = 0;
 				data[2] = 0;
 			}
@@ -107,11 +88,9 @@ var Binarize = (limit) => {
 	const min = 0;
 	const max = 255;
 
-	limit = limit ? limit : (max + min) / 2;
-
 	calcBinarize(limit, dtMin);
 }
-
+/*
 var SplitLetters = () => {
 	var canvasOri = document.querySelector('#captcha-binarize');
 	var ctxOri = canvasOri.getContext('2d');
@@ -131,33 +110,34 @@ var SplitLetters = () => {
 	//var pixel = ctx.getImageData(coluna, linha, 1, 1);
 	//var data = pixel.data;
 
-	letters.push({
+	letters.push({ //letter 1
 		initX: 10,
 		initY: 5
 	});
 
-	letters[0].finalX = 24;
-	letters[0].finalY = height - 10;
+	letters[0].finalX = 24; //letter 1
+	letters[0].finalY = height - 10; //letter 1
 	var fl = 34;
 	var f = 24
 
-	for (let i = 1; i < 5; i++) {
-		if (i === 1) {
+	for (let i = 1; i < 5; i++) { //letter 2 ate 5
+		if (i === 1) { //letter 2
 			letters.push({
 				initX: fl,
 				initY: 5
 			});
 			letters[i].finalX = f;
-			letters[i].finalY = height - 10;
+			letters[i].finalY = height - 10; //tamanho do canvas -10
 		} else {
 			fl += 24;
 			f += 1;
 			letters.push({
+
 				initX: fl,
 				initY: 5
 			});
 			letters[i].finalX = f;
-			letters[i].finalY = height - 10;
+			letters[i].finalY = height - 10; //tamanho do canvas =10
 		}
 
 
@@ -170,9 +150,85 @@ var SplitLetters = () => {
 		console.log(Math.abs(letters[i].finalX - letters[i].initX));
 		console.log('por');
 		console.log(letters[i].finalY - letters[i].initY);
+		console.log(letters);
+	}
+	return letters;
+
+}*/
+
+
+var SplitLetters = () => {
+	var canvasOri = document.querySelector('#captcha-binarize');
+	var ctxOri = canvasOri.getContext('2d');
+	var canvas = document.querySelector('#captcha-split');
+	var width = canvasOri.width;
+	var height = canvasOri.height;
+	canvas.width = width;
+	canvas.height = height;
+	var ctx = canvas.getContext('2d');
+	var imgdata = ctxOri.getImageData(0, 0, width, height);
+	ctx.putImageData(imgdata, 0, 0);
+	var fillPix;
+
+	var letters = [];
+	var cont = 0;
+	var base = 0;
+	while (cont <= 5) {
+		cont++;
+
+
+
+		var initX = 1000,
+		initY = 1000,
+		finalX = 0,
+		finalY = 0;
+		var findEdge = false;
+
+
+		for (let col = base; col < width; col++) {
+
+			for (let lin = 0; lin < height; lin++) {
+				var pixel = ctx.getImageData(col, lin, 1, 1);
+				var data = pixel.data;
+
+
+				if (data[0] < 10) { //black
+					if (col < initX)
+						initX = col
+					if (lin < initY)
+						initY = lin;
+					findEdge = true;
+				} else if (findEdge && data[0] > 100 && lin > finalY && col > finalX) { //white
+					finalX = col;
+					finalY = lin;
+					findEdge = false;
+				}
+
+			}
+		}
+
+		letters.push({
+			initX: initX,
+			initY: initY,
+			finalX: finalX,
+			finalY: finalY
+		});
+		if(finalX < 200)
+		base = finalX;
+	}
+
+
+
+	for (let i = 0; i < letters.length; i++) {
+		ctx.strokeRect(letters[i].initX, letters[i].initY, (letters[i].finalX - letters[i].initX), (letters[i].finalY - letters[i].initY));
+		/*console.log('Dimensoes');
+		console.log(Math.abs(letters[i].finalX - letters[i].initX));
+		console.log('por');
+		console.log(letters[i].finalY - letters[i].initY);
 		console.log(letters);*/
 	}
 	return letters;
+
 
 }
 
@@ -277,7 +333,7 @@ var runRecognize = (letters) => {
 		recognizedWord += result + '';
 	}
 	ctx.font = "30px Arial";
-	ctx.fillText(recognizedWord,10,50);	
+	ctx.fillText(recognizedWord, 10, 50);
 	console.log(recognizedWord);
 }
 
