@@ -173,15 +173,15 @@ var SplitLetters = () => {
 	var letters = [];
 	var cont = 0;
 	var base = 0;
-	while (cont <= 5) {
+	while (cont < 5) {
 		cont++;
 
 
 
 		var initX = 1000,
-		initY = 1000,
-		finalX = 0,
-		finalY = 0;
+			initY = 1000,
+			finalX = 0,
+			finalY = 0;
 		var findEdge = false;
 
 
@@ -199,7 +199,7 @@ var SplitLetters = () => {
 						initY = lin;
 					findEdge = true;
 				} else if (findEdge && data[0] > 100 && lin > finalY && col > finalX) { //white
-					finalX = col;
+					finalX = initX + 20;
 					finalY = lin;
 					findEdge = false;
 				}
@@ -213,19 +213,25 @@ var SplitLetters = () => {
 			finalX: finalX,
 			finalY: finalY
 		});
-		if(finalX < 200)
-		base = finalX;
+		if ((finalX) < 300)
+			base = finalX + 1;
 	}
 
 
 
 	for (let i = 0; i < letters.length; i++) {
+		if(i !== 4)
 		ctx.strokeRect(letters[i].initX, letters[i].initY, (letters[i].finalX - letters[i].initX), (letters[i].finalY - letters[i].initY));
-		/*console.log('Dimensoes');
-		console.log(Math.abs(letters[i].finalX - letters[i].initX));
-		console.log('por');
+		else
+		ctx.strokeRect(letters[i].initX, letters[i].initY, (letters[i].finalX - letters[i].initX), 33);
+
+		console.log('Dimensoes');
+		console.log(letters[i].initX);
+		console.log(letters[i].initY)
+		console.log(letters[i].finalX - letters[i].initX);
+		console.log(letters[i].finalX);
 		console.log(letters[i].finalY - letters[i].initY);
-		console.log(letters);*/
+
 	}
 	return letters;
 
